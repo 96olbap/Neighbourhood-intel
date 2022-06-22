@@ -1,0 +1,102 @@
+{%extends 'base.html'%}
+{% load crispy_forms_tags %}
+{%block content%}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="container-fluid p-0 m">
+                <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>                    
+                </div>
+            </div>            
+            {% endfor %}
+            {% endif %}
+            {%if user_neighbourhood%}
+            <div class="text-center my-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h1>Welcome to {{user_neighbourhood.name|title}} neighborhood</h1>
+                    </div>
+                </div>
+                    
+                <div class="card text-center mb-2">
+                    <div class="card-body">
+                        <p class="card-text"><strong>General Location: </strong>{{user_neighbourhood.location}}</p><br>
+                        <p class="card-text"><strong>Number of Occupants: </strong>{{occupants}}</p><br>
+                        <p class="card-text"><strong>Health Department Contact: </strong>{{user_neighbourhood.health_dept}}</p>
+                        <br>
+                        <p class="card-text"><strong>Police Department Contact: </strong>{{user_neighbourhood.police_dept}}</p>
+                        <br>
+                        {%if user_neighbourhood.admin.id == request.user.id%}
+                        <a href="{%url 'single_neighbourhood' id=user_neighbourhood.id%}" class="btn btn-outline-info">Update Details</a>
+                        {%else%}
+                        {%endif%}
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary w-50" data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop">Add a Post</button>
+                <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Create Post</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-sm-1"></div>
+                                    <div class="col-sm-10">
+                                        <form method="POST" class="form-group" enctype="multipart/form-data">
+                                            <div class="form-group"></div>
+                                            {% csrf_token %}
+                                            {{form|crispy }}
+                                            <button type="submit" class="btn btn-success">Create Post</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-sm-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><br>
+            <div>
+                {%for p in posts%}
+                <div class="card m-3" >
+                    <div class="card-body">
+                        <h5 class="card-title"><strong>Title: </strong>{{p.post_title}}</h5><br>
+                        <h6 class="card-subtitle mb-2"><strong>Neighbourhood: </strong>{{p.post_neighbourhood}}</h6><br>
+                        <p class="card-text"><strong>Posted By: </strong>{{p.post_owner.first_name}} <a href="{%url 'profile' id=p.post_owner.id%}">Profile</a></p><hr>
+                        <p class="card-text">{{p.post_content}}</p><br>
+                        <p class="text-muted fst-italic fw-bold">{{p.post_creation}}</p>                    
+                    </div>
+                </div>
+                {%empty%}
+                <div class="card text-center">
+                    <div class="card-body">
+                      <h3 class="card-title">No posts have been posted</h3>
+                    </div>
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+        {%else%}
+        <div class="card text-center">
+            <div class="card-body">
+              <h3 class="card-title">Join a neighbourhood by updating your profile to view this page.</h3>
+              <a href="{%url 'profile' id=request.user.id%}" class="btn btn-outline-info">Update Profile</a>
+            </div>
+        </div>
+        {%endif%}
+        <div class="col-sm-2"></div>
+    </div>
+</div>
+{%endblock%}
+
