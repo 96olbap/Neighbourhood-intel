@@ -42,13 +42,12 @@ def homepage(request):
     posts=[]
     occupants = None
     try:
-        user_neighbourhood = NeighbourHood.find_neighbourhood(profile.neighbourhood.id)
+        user_neighbourhood = Neighbourhood.find_neighbourhood(profile.neighbourhood.id)
         posts = user_neighbourhood.post_neighbourhood.all()
         occupants = user_neighbourhood.user_neighbourhood.all().count()
 
     except AttributeError:
         messages.error(request,('Update your Profile to view your neighbourhood information.'))
-    # businesses = user_neighbourhood.neighbourhood_business.all()
     
     #post creation
     if request.method == 'POST':
@@ -75,7 +74,7 @@ def homepage(request):
 @login_required(login_url='login')
 def create_neighbourhood(request):
     if request.method == 'POST':
-        form = NeighbourHoodCreationForm(request.POST)
+        form = NeighbourhoodCreationForm(request.POST)
         if form.is_valid():
             neighbourhood = form.save(commit=False)
             neighbourhood.admin = request.user
@@ -85,7 +84,7 @@ def create_neighbourhood(request):
             messages.error(request,('An error occured while saving the form'))
         return redirect('neighbourhoods')
     else:
-        form= NeighbourHoodCreationForm()
+        form= NeighbourhoodCreationForm()
     title = 'Add Neighbourhood'
     context = {
         'form': form,
@@ -95,7 +94,7 @@ def create_neighbourhood(request):
 
 @login_required(login_url='login')
 def neighbourhoods(request):
-    neighbourhoods = NeighbourHood.get_neighbourhoods(
+    neighbourhoods = Neighbourhood.get_neighbourhoods(
     )
     title = 'Neighbourhoods'
     context = {
@@ -106,16 +105,16 @@ def neighbourhoods(request):
 
 @login_required(login_url='login')
 def single_neighbourhood(request, id):
-    neighbourhood = NeighbourHood.find_neighbourhood(id)
+    neighbourhood = Neighbourhood.find_neighbourhood(id)
     occupants = neighbourhood.user_neighbourhood.all().count()
     if request.method == 'POST':
-        form = NeighbourHoodCreationForm(request.POST, instance=neighbourhood)
+        form = NeighbourhoodCreationForm(request.POST, instance=neighbourhood)
 
         if form.is_valid():
             form.save()
             return redirect('single_neighbourhood' ,id=id)
     else:
-        form = NeighbourHoodCreationForm(instance=neighbourhood)
+        form = NeighbourhoodCreationForm(instance=neighbourhood)
     
     title = 'Neighbourhood Details'
     context = {
@@ -128,7 +127,7 @@ def single_neighbourhood(request, id):
 
 @login_required(login_url='login')
 def delete_neighbourhood(request, id):
-    NeighbourHood.delete_neighbourhood(id)
+    Neighbourhood.delete_neighbourhood(id)
     return redirect('neighbourhoods')
 
 
@@ -181,7 +180,7 @@ def register_business(request):
 @login_required(login_url='login')
 def search_business(request):
     profile= Profile.get_profile(request.user.id)
-    user_neighbourhood = NeighbourHood.find_neighbourhood(profile.neighbourhood.id)
+    user_neighbourhood = Neighbourhood.find_neighbourhood(profile.neighbourhood.id)
     businesses = []
     if 'search_form' in request.GET and request.GET["search_form"]:
         query = request.GET.get('search_form')
@@ -204,7 +203,7 @@ def businesses(request):
     user_neighbourhood = None
     businesses=[]
     try:
-        user_neighbourhood = NeighbourHood.find_neighbourhood(profile.neighbourhood.id)
+        user_neighbourhood = Neighbourhood.find_neighbourhood(profile.neighbourhood.id)
         businesses = user_neighbourhood.neighbourhood_business.all()
 
     except AttributeError:
