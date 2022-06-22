@@ -9,7 +9,7 @@ from django.db.models.signals import post_save
 
 
 
-class NeighbourHood(models.Model):
+class Neighbourhood(models.Model):
     name = models.CharField(max_length=50,verbose_name='Neighbourhood Name')
     location = models.CharField(max_length=50,verbose_name='Neighbourhood Location')
     occupants = models.IntegerField(verbose_name='Neighbourhood Occupants', null=True)
@@ -49,7 +49,7 @@ class NeighbourHood(models.Model):
 class Profile(models.Model):
     profile_user = models.OneToOneField(User,related_name='profile', on_delete=models.CASCADE, null=True)
     profile_photo = CloudinaryField('profile_photo',null=True)
-    neighbourhood = models.ForeignKey(NeighbourHood, related_name='user_neighbourhood' ,on_delete=models.CASCADE, null=True)
+    neighbourhood = models.ForeignKey(Neighbourhood, related_name='user_neighbourhood' ,on_delete=models.CASCADE, null=True)
     email = models.EmailField(null=True)
     
 
@@ -73,7 +73,7 @@ class Post(models.Model):
     post_title = models.CharField(max_length=50,verbose_name='Post Title',null=True)
     post_content = models.TextField(null=True)
     post_owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    post_neighbourhood = models.ForeignKey(NeighbourHood, related_name='post_neighbourhood', on_delete=models.CASCADE, null=True)
+    post_neighbourhood = models.ForeignKey(Neighbourhood, related_name='post_neighbourhood', on_delete=models.CASCADE, null=True)
     post_creation = models.DateTimeField(auto_now_add=True)
 
 
@@ -84,7 +84,7 @@ class Post(models.Model):
 class Business(models.Model):
     business_name=models.CharField(max_length=50,verbose_name='Business Name',null=True)
     business_owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    business_neighbourhood = models.ForeignKey(NeighbourHood, related_name='neighbourhood_business', on_delete=models.CASCADE, null=True)
+    business_neighbourhood = models.ForeignKey(Neighbourhood, related_name='neighbourhood_business', on_delete=models.CASCADE, null=True)
     business_email = models.EmailField(null=True)
 
     def create_business(self):

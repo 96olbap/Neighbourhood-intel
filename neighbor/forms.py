@@ -15,7 +15,7 @@ class RegistrationForm(UserCreationForm):
 class NeighbourHoodCreationForm(forms.ModelForm):
     
     class Meta:
-        model =   NeighbourHood
+        model =   Neighbourhood
         exclude = ['admin','occupants']
         
 class UpdateUserForm(forms.ModelForm):
